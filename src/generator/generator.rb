@@ -3,8 +3,8 @@ require_relative './dropbox'
 
 class Generator
     RAW_DIR = File.dirname(__FILE__) + '/download'
-    VIEW_DIR = './views'
-    PUBLIC_DIR = './public'
+    VIEW_DIR = File.expand_path('../../views', File.dirname(__FILE__))
+    PUBLIC_DIR = File.expand_path('../../public', File.dirname(__FILE__))
     IMAGES_DIR = PUBLIC_DIR + '/imgs'
 
     def initialize(download)
