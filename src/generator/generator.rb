@@ -11,6 +11,8 @@ class Generator
         download ||= false
         download_content if download
         generate_site
+
+        Dir.mkdir(IMAGES_DIR) unless Dir.exists?(IMAGES_DIR)
     end
 
     def generate_site
