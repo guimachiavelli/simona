@@ -6,13 +6,17 @@ class Generator
     VIEW_DIR = File.expand_path('../../views', File.dirname(__FILE__))
     PUBLIC_DIR = File.expand_path('../../public', File.dirname(__FILE__))
     IMAGES_DIR = PUBLIC_DIR + '/imgs'
+    DOWNLOAD_DIR = File.dirname(__FILE__) + '/download'
+
+    private_constant :RAW_DIR, :VIEW_DIR, :PUBLIC_DIR, :IMAGES_DIR, :DOWNLOAD_DIR
 
     def initialize(download)
         download ||= false
+        Dir.mkdir(IMAGES_DIR) unless Dir.exists?(IMAGES_DIR)
+        Dir.mkdir(DOWNLOAD_DIR) unless Dir.exists?(DOWNLOAD_DIR)
+
         download_content if download
         generate_site
-
-        Dir.mkdir(IMAGES_DIR) unless Dir.exists?(IMAGES_DIR)
     end
 
     def generate_site

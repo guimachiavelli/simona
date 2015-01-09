@@ -1,7 +1,5 @@
 require 'dropbox_sdk'
 
-
-
 class Downloader
     APP_KEY = '4ytm96e1tvmetgu'
     APP_SECRET = 'u6kuo7j16wq26vh'
@@ -9,7 +7,6 @@ class Downloader
     DOWNLOAD_DIR = File.dirname(__FILE__) + '/download'
 
     private_constant :APP_KEY, :APP_SECRET, :CREDENTIALS_FILE, :DOWNLOAD_DIR
-
 
     def initialize
         @access_token, @user_id = get_credentials
