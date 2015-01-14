@@ -39,10 +39,10 @@ class Generator
     def generate_index(projects)
         index = '<ol class="project-index">'
         projects.each do |project|
-            index << "<li><a href=\"/#{project}\">#{project}</a></li>"
+            index << "<li><a href=\"/#{project}.html\">#{project}</a></li>"
         end
         index << '</ol>'
-        File.write(VIEW_DIR + '/index.html', index)
+        File.write(PUBLIC_DIR + '/index.html', index)
     end
 
     def generate_project_page(project)
@@ -53,7 +53,7 @@ class Generator
             page << image_html(image)
         end
 
-        File.write(VIEW_DIR + '/' + project + '.html', page)
+        File.write(PUBLIC_DIR + '/' + project + '.html', page)
     end
 
     def download_content
@@ -83,6 +83,7 @@ class Generator
     end
 
     def image_html(image)
+        image = image.gsub PUBLIC_DIR, ''
         "<figure class='project-image'><img src='#{image}' alt=''></figure>"
     end
 
