@@ -3,12 +3,12 @@ require_relative './dropbox'
 
 class Generator
     RAW_DIR = File.dirname(__FILE__) + '/download'
-    VIEW_DIR = File.expand_path('../../views', File.dirname(__FILE__))
+    PARTIALS_DIR = File.expand_path('../partials', File.dirname(__FILE__))
     PUBLIC_DIR = File.expand_path('../../public', File.dirname(__FILE__))
     IMAGES_DIR = PUBLIC_DIR + '/imgs'
     DOWNLOAD_DIR = File.dirname(__FILE__) + '/download'
 
-    private_constant :RAW_DIR, :VIEW_DIR, :PUBLIC_DIR, :IMAGES_DIR, :DOWNLOAD_DIR
+    private_constant :RAW_DIR, :PARTIALS_DIR, :PUBLIC_DIR, :IMAGES_DIR, :DOWNLOAD_DIR
 
     def initialize(download)
         download ||= false
@@ -21,37 +21,62 @@ class Generator
 
     def generate_site
         projects = get_projects
+
         projects.each do |project|
             generate_project_page project
         end
-        generate_index projects
+
+        pages = Dir[RAW_DIR + '/*.md']
+        generate_pages(pages)
+
+
+        generate_index projects, pages
+
+    end
+
+    def generate_pages(pages)
+        pages.each do |page|
+            name = File.basename(page, '.*')
+            content = File.read(PARTIALS_DIR + '/header.html')
+            content << Kramdown::Document.new(File.read(page)).to_html
+            content << File.read(PARTIALS_DIR + '/footer.html')
+            File.write(PUBLIC_DIR + '/' + name + '.html', content)
+        end
     end
 
     def get_projects
         projects = []
         dirs = Dir.new RAW_DIR
         dirs.each do |project|
-            projects << project unless project.start_with? '.'
+            projects << project unless project.include? '.'
         end
         projects
     end
 
-    def generate_index(projects)
+    def generate_index(projects, pages)
         index = '<ol class="project-index">'
         projects.each do |project|
             index << "<li><a href=\"/#{project}.html\">#{project}</a></li>"
         end
+        pages.each do |page|
+            page = File.basename(page, '.*')
+            index << "<li><a href=\"/#{page}.html\">#{page}</a></li>"
+        end
+
         index << '</ol>'
         File.write(PUBLIC_DIR + '/index.html', index)
     end
 
     def generate_project_page(project)
         images = get_images_files project
-        page = get_description project
+        page = File.read(PARTIALS_DIR + '/header.html')
+        page << get_description(project)
 
         images.each do |image|
             page << image_html(image)
         end
+
+        page << File.read(PARTIALS_DIR + '/footer.html')
 
         File.write(PUBLIC_DIR + '/' + project + '.html', page)
     end

@@ -22,6 +22,8 @@ class Downloader
         projects = project_list
         files = file_list(projects)
 
+        puts files
+
         create_folders(projects)
         files.each do |file|
             download_file(file)
@@ -33,7 +35,7 @@ class Downloader
         folders = @client.metadata('/')
 
         folders['contents'].each do |content|
-            projects << content['path'] if content['is_dir']
+            projects << content['path']
         end
 
         projects
@@ -42,17 +44,21 @@ class Downloader
     def create_folders(projects)
         projects.each do |project|
             dir_path = DOWNLOAD_DIR + project
-            Dir.mkdir(dir_path) unless Dir.exists?(dir_path)
+            Dir.mkdir(dir_path) unless Dir.exists?(dir_path) or !File.directory? project
         end
     end
 
-    def file_list(projects)
+    def file_list(pages)
         files = []
-        projects.each do |project|
-            project_files = @client.metadata(project)['contents']
-            project_files.each do |file|
-                files << file['path']
-
+        pages.each do |page|
+            page = @client.metadata(page)
+            if page['is_dir']
+                project_files = page['contents']
+                project_files.each do |file|
+                    files << file['path']
+                end
+            else
+                files << page['path']
             end
         end
         files
